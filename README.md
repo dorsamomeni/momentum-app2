@@ -40,6 +40,14 @@ npx supabase db push
 npm start
 ```
 
+For desktop/web:
+
+```sh
+npm run web
+```
+
+The desktop build renders a dedicated coach workspace rather than stretching the mobile UI.
+
 ## Project Shape
 
 ```text
@@ -62,6 +70,10 @@ supabase/               Local Supabase config and migrations
 The legacy app used Firebase/Firestore directly from screens. To move fast, this rebuild keeps those screens working through a Supabase-backed compatibility layer in `src/compat`. New code should use typed Supabase services directly rather than adding more compatibility usage.
 
 The first database migration uses a generic `documents` table so existing program, week, day, exercise, template, analytics, and user records can move without a long relational rewrite. The next backend milestone is replacing hot paths with relational tables and stricter relationship-aware RLS.
+
+## Supabase Setup
+
+Follow [docs/SUPABASE_SETUP.md](./docs/SUPABASE_SETUP.md) to create the hosted project, add `.env`, and push the included migrations.
 
 ## Validation
 
