@@ -1,100 +1,134 @@
 // @ts-nocheck
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const OpeningScreen = ({ navigation }) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Welcome to Momentum</Text>
-        <Text style={styles.subtitle}>Your fitness journey starts here</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.logoWrap}>
+            <Image
+              source={require("../assets/logo.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+          <Text style={styles.title}>Momentum</Text>
+          <Text style={styles.subtitle}>
+            Coaching and training, in one place.
+          </Text>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={styles.primaryButton}
+            onPress={() => navigation.navigate("SignIn")}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.primaryButtonText}>Sign In</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={styles.secondaryButton}
+            onPress={() => navigation.navigate("SignUp")}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.secondaryButtonText}>Create Account</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.blackButton}
-          onPress={() => navigation.navigate("SignIn")}
-        >
-          <Text style={styles.blackButtonText}>Sign In</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.whiteButton}
-          onPress={() => navigation.navigate("SignUp")}
-        >
-          <Text style={styles.whiteButtonText}>Create Account</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.devButton}
-          onPress={() => navigation.navigate("Clients")}
-        >
-          <Text style={styles.devButtonText}>Test</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 20,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
   },
   header: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 90,
+    paddingTop: 48,
+    gap: 12,
+  },
+  logoWrap: {
+    width: 72,
+    height: 72,
+    borderRadius: 16,
+    backgroundColor: "#111827",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  logo: {
+    width: 46,
+    height: 46,
+    tintColor: "#fff",
   },
   title: {
-    fontSize: 30,
-    fontWeight: "bold",
+    fontSize: 34,
+    fontWeight: "800",
     color: "#000",
-    marginBottom: 10,
   },
   subtitle: {
-    fontSize: 18,
-    color: "#666",
+    fontSize: 16,
+    color: "#475569",
     textAlign: "center",
+    paddingHorizontal: 24,
+    lineHeight: 22,
   },
   buttonContainer: {
-    paddingBottom: 50,
-    gap: 15,
+    paddingBottom: 18,
+    gap: 12,
   },
-  blackButton: {
-    backgroundColor: "#000",
-    padding: 15,
-    borderRadius: 10,
+  primaryButton: {
+    height: 54,
+    backgroundColor: "#111827",
+    borderRadius: 12,
     alignItems: "center",
+    justifyContent: "center",
   },
-  whiteButton: {
+  secondaryButton: {
+    height: 54,
     backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#e2e8f0",
   },
-  blackButtonText: {
+  primaryButtonText: {
     color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "800",
   },
-  whiteButtonText: {
-    color: "#000",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  devButton: {
-    padding: 8,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  devButtonText: {
-    color: "#999",
-    fontSize: 12,
+  secondaryButtonText: {
+    color: "#0f172a",
+    fontSize: 16,
+    fontWeight: "800",
   },
 });
 

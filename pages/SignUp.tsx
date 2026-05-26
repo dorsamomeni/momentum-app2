@@ -24,6 +24,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Create refs for each input to enable keyboard navigation
   const lastNameRef = useRef(null);
@@ -53,6 +54,7 @@ const SignUp = () => {
     }
 
     setLoading(true);
+    setErrorMessage("");
     try {
       const userData = {
         email,
@@ -74,9 +76,12 @@ const SignUp = () => {
       navigation.navigate("MaxLifts", { role: result.userData.role });
     } catch (error) {
       console.error("Signup error:", error);
+      const message =
+        error?.message || "Failed to create account. Please try again.";
+      setErrorMessage(message);
       Alert.alert(
         "Error",
-        error.message || "Failed to create account. Please try again."
+        message
       );
     } finally {
       setLoading(false);
@@ -239,6 +244,12 @@ const SignUp = () => {
             </TouchableOpacity>
           </View>
 
+          {!!errorMessage && (
+            <View style={styles.inlineError}>
+              <Text style={styles.inlineErrorText}>{errorMessage}</Text>
+            </View>
+          )}
+
           <TouchableOpacity
             style={[styles.createButton, loading && styles.disabledButton]}
             onPress={handleSignUp}
@@ -353,6 +364,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginTop: 20,
+  },
+  inlineError: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#fecaca",
+    backgroundColor: "#fef2f2",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  inlineErrorText: {
+    color: "#991b1b",
+    fontSize: 13,
+    lineHeight: 18,
   },
   createButtonText: {
     color: "#fff",
