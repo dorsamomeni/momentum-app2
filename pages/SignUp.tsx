@@ -10,6 +10,7 @@ import {
   ScrollView,
   Keyboard,
   Platform,
+  Pressable,
 } from "react-native";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import { signup } from "../src/auth/signup";
@@ -25,6 +26,7 @@ const SignUp = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [debugStatus, setDebugStatus] = useState("");
 
   // Create refs for each input to enable keyboard navigation
   const lastNameRef = useRef(null);
@@ -85,6 +87,45 @@ const SignUp = () => {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const testSupabaseConnection = async () => {
+    const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+    const key =
+      process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+      process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!url || !key) {
+      setDebugStatus("Missing EXPO_PUBLIC_SUPABASE_URL or key in .env");
+      return;
+    }
+
+    setDebugStatus("Testing connection...");
+    const healthUrl = `${url}/auth/v1/health`;
+
+    const controller =
+      typeof AbortController !== "undefined" ? new AbortController() : undefined;
+    const timeout = controller
+      ? setTimeout(() => controller.abort(), 8000)
+      : undefined;
+
+    try {
+      const startedAt = Date.now();
+      const res = await fetch(healthUrl, {
+        method: "GET",
+        headers: {
+          apikey: key,
+        },
+        signal: controller?.signal,
+      });
+      const body = await res.text();
+      const ms = Date.now() - startedAt;
+      setDebugStatus(`OK: ${res.status} in ${ms}ms\n${body}`);
+    } catch (e) {
+      setDebugStatus(`FAILED: ${String(e)}`);
+    } finally {
+      if (timeout) clearTimeout(timeout);
     }
   };
 
@@ -260,6 +301,16 @@ const SignUp = () => {
             </Text>
           </TouchableOpacity>
 
+          <Pressable style={styles.debugLink} onPress={testSupabaseConnection}>
+            <Text style={styles.debugLinkText}>Test connection</Text>
+          </Pressable>
+
+          {!!debugStatus && (
+            <View style={styles.debugBox}>
+              <Text style={styles.debugBoxText}>{debugStatus}</Text>
+            </View>
+          )}
+
           {/* Add extra space at the bottom */}
           <View style={styles.bottomSpace} />
         </View>
@@ -377,6 +428,28 @@ const styles = StyleSheet.create({
     color: "#991b1b",
     fontSize: 13,
     lineHeight: 18,
+  },
+  debugLink: {
+    alignSelf: "center",
+    paddingVertical: 10,
+  },
+  debugLinkText: {
+    color: "#64748b",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  debugBox: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    backgroundColor: "#f8fafc",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  debugBoxText: {
+    color: "#0f172a",
+    fontSize: 12,
+    lineHeight: 16,
   },
   createButtonText: {
     color: "#fff",
