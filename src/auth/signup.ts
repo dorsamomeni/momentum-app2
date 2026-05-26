@@ -9,11 +9,33 @@ import {
 } from "../compat/firestore";
 import { auth, db } from "../config/firebase";
 import { getRandomProfileColor } from "../utils/colors";
+import { supabase } from "../config/supabase";
 
 export const signup = async (userData) => {
   const { email, password, firstName, lastName, username, role } = userData;
 
   try {
+    // Quick connectivity preflight. iOS often collapses DNS/TLS failures into
+    // a generic "Network request failed", so we detect it early and provide
+    // actionable diagnostics.
+    try {
+      const { error: healthError } = await supabase.auth.getSession();
+      if (healthError) {
+        // Not fatal by itself, but it confirms we can talk to Supabase.
+        console.log("Supabase session check warning:", healthError.message);
+      }
+    } catch (networkError) {
+      const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+      throw {
+        code: "network/supabase-unreachable",
+        message:
+          "Cannot reach Supabase from the app. In the iOS Simulator, open Safari and try:\n" +
+          `${supabaseUrl}/auth/v1/health\n` +
+          "If that doesn't load, fix your EXPO_PUBLIC_SUPABASE_URL/.env or your network/VPN/DNS, then restart Expo.",
+        details: String(networkError),
+      };
+    }
+
     // Check if username already exists
     const usernameQuery = query(
       collection(db, "users"),
