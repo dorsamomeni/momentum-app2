@@ -16,10 +16,32 @@ if (!supabaseUrl || !supabasePublishableKey) {
   );
 }
 
+const fetchWithTimeout: typeof fetch = async (input, init) => {
+  const timeoutMs = 15000;
+  const controller =
+    typeof AbortController !== "undefined" ? new AbortController() : undefined;
+
+  const timeout = controller
+    ? setTimeout(() => controller.abort(), timeoutMs)
+    : undefined;
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller?.signal ?? init?.signal,
+    });
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+};
+
 export const supabase = createClient<Database>(
   supabaseUrl ?? "https://example.supabase.co",
   supabasePublishableKey ?? "missing-publishable-key",
   {
+    global: {
+      fetch: fetchWithTimeout,
+    },
     auth: {
       storage: AsyncStorage,
       autoRefreshToken: true,
